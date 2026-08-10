@@ -1,0 +1,29 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ---- Virtual environments ----
+.venv/
+venv/
+env/
+ENV/
+
+# ---- Generated output (notes & PDFs) ----
+output/
+
+# ---- Environment / secrets ----
+.env
+.env.*
+
+# ---- Local Claude Code settings ----
+.claude/settings.local.json
+
+# ---- IDE / OS ----
+.idea/
+.vscode/
+*.swp
+*.log
+.DS_Store
+Thumbs.db

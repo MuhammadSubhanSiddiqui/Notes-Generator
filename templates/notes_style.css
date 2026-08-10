@@ -1,0 +1,110 @@
+/* Styling for notes PDFs — used via Pandoc + weasyprint/wkhtmltopdf */
+
+@page {
+    margin: 2.2cm 2cm;
+    @bottom-center {
+        content: counter(page);
+        font-size: 9pt;
+        color: #888;
+    }
+}
+
+body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 11pt;
+    line-height: 1.55;
+    color: #1a1a1a;
+}
+
+h1 {
+    font-size: 24pt;
+    color: #0A2540;
+    border-bottom: 3px solid #0A2540;
+    padding-bottom: 8px;
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 16pt;
+    color: #0A2540;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 4px;
+    margin-top: 28px;
+}
+
+h3 {
+    font-size: 13pt;
+    color: #16425B;
+    margin-top: 20px;
+}
+
+p, li {
+    font-size: 10.5pt;
+}
+
+strong {
+    color: #0A2540;
+}
+
+/* Code blocks (used for ASCII diagrams) — critical: must stay monospace
+   and NOT wrap, or ASCII box-drawing breaks */
+pre {
+    background: #f4f6f8;
+    border: 1px solid #dde3e8;
+    border-left: 4px solid #16425B;
+    border-radius: 4px;
+    padding: 12px 14px;
+    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+    font-size: 8.5pt;
+    line-height: 1.3;
+    white-space: pre;
+    overflow-x: auto;
+    page-break-inside: avoid;
+}
+
+code {
+    font-family: 'Courier New', 'DejaVu Sans Mono', monospace;
+    background: #f0f0f0;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 9.5pt;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+}
+
+blockquote {
+    border-left: 3px solid #ccc;
+    margin-left: 0;
+    padding-left: 14px;
+    color: #555;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 24px 0;
+}
+
+ul, ol {
+    padding-left: 22px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 10pt;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 6px 10px;
+    text-align: left;
+}
+
+th {
+    background: #0A2540;
+    color: white;
+}
