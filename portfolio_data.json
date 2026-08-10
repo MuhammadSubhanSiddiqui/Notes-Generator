@@ -1,130 +1,298 @@
 {
-  "scraped_at": "2026-08-10T19:04:14.381482Z",
+  "scraped_at": "2026-08-10T20:34:43.832707Z",
   "skills": [
-    "ASP.NET",
-    "C#",
+    "Python",
+    "JavaScript",
+    "TypeScript",
     "C/C++",
-    "Cisco Networking",
-    "Cloudflare R2",
-    "Computer Vision",
-    "DNS/Network Monitoring",
-    "Deepgram (STT)",
+    "C#",
+    "SQL",
+    "PyTorch",
+    "OpenCV",
+    "NumPy",
+    "Scikit-learn",
+    "Scikit-image",
+    "Matplotlib",
+    "Hugging Face",
+    "LLM Integration (Gemini API)",
+    "LangChain",
+    "Prompt Engineering",
+    "RAG",
+    "Fine-tuning",
+    "Transformers",
     "DistilBERT",
-    "Docker",
-    "ESLint",
+    "spaCy",
+    "NLP",
+    "Computer Vision",
+    "Transfer Learning",
+    "ReactJS",
+    "Next.js",
+    "Vite",
+    "Node.js",
     "Express.js",
     "FastAPI",
-    "Fine-tuning",
+    "ASP.NET",
+    "Tailwind CSS",
+    "RESTful APIs",
+    "JWT Authentication",
+    "MongoDB",
+    "MongoDB Atlas",
+    "PostgreSQL",
+    "SQL Server (T-SQL)",
+    "PL/pgSQL",
+    "Cisco Networking",
+    "Network Troubleshooting",
+    "DNS/Network Monitoring",
+    "VirusTotal API",
+    "Tkinter (GUI Tooling)",
+    "Deepgram (STT)",
+    "Groq Cloud (Qwen3)",
+    "Piper TTS",
+    "LiveKit Agents",
+    "Real-time Audio Pipelines",
     "Git",
     "GitHub",
     "GitHub REST API",
-    "Google Colab",
-    "Groq Cloud (Qwen3)",
-    "Hugging Face",
-    "Hugging Face Spaces",
-    "JWT Authentication",
-    "JavaScript",
-    "LLM Integration (Gemini API)",
-    "LangChain",
-    "LiveKit Agents",
-    "Matplotlib",
-    "MongoDB",
-    "MongoDB Atlas",
-    "NLP",
-    "Network Troubleshooting",
-    "Next.js",
-    "Node.js",
-    "NumPy",
-    "OpenCV",
-    "PL/pgSQL",
-    "Piper TTS",
-    "PostgreSQL",
-    "Prompt Engineering",
-    "PyTorch",
-    "Python",
-    "RAG",
-    "RESTful APIs",
+    "Docker",
     "Railway",
-    "ReactJS",
-    "Real-time Audio Pipelines",
-    "SQL",
-    "SQL Server (T-SQL)",
-    "Scikit-image",
-    "Scikit-learn",
-    "Streamlit",
-    "Tailwind CSS",
-    "Tkinter (GUI Tooling)",
-    "Transfer Learning",
-    "Transformers",
-    "TypeScript",
+    "Cloudflare R2",
     "VS Code",
-    "VirusTotal API",
-    "Vite",
-    "spaCy"
+    "Google Colab",
+    "Hugging Face Spaces",
+    "Streamlit",
+    "ESLint"
   ],
   "projects": [
     {
-      "name": "",
-      "date": "",
-      "description": "",
-      "tech_stack": [],
-      "github_url": ""
+      "name": "PromptIR Domain Adaptation",
+      "period": "May 2026",
+      "description": "Custom ML data pipeline with Python/OpenCV synthesizing a 600-image multi-degradation dataset (noise, rain, dust) based on the DIV2K benchmark\nTransfer learning on the Transformer-based PromptIR architecture\n+4.02 dB and +3.58 dB PSNR improvement on novel weather artifacts in only 3 training epochs",
+      "tech_stack": [
+        "Computer Vision",
+        "Transfer Learning",
+        "PyTorch",
+        "OpenCV",
+        "Transformers"
+      ],
+      "links": [
+        "GitHub"
+      ],
+      "raw_text": "+4.02 dB PSNR\nFeatured\n\nAI/ML\n\nPromptIR Domain Adaptation\n\nMay 2026\n\nCustom ML data pipeline with Python/OpenCV synthesizing a 600-image multi-degradation dataset (noise, rain, dust) based on the DIV2K benchmark\nTransfer learning on the Transformer-based PromptIR architecture\n+4.02 dB and +3.58 dB PSNR improvement on novel weather artifacts in only 3 training epochs\nComputer Vision\nTransfer Learning\nPyTorch\nOpenCV\nTransformers\nGitHub"
     },
     {
-      "name": "",
-      "date": "",
-      "description": "",
-      "tech_stack": [],
-      "github_url": ""
+      "name": "AI Financial Scam Detection Engine",
+      "period": "April 2026 – May 2026",
+      "description": "Curated and published the \"Financial Scam and Deceptive Text Meta-Dataset\" on Kaggle for benchmark training\nEngineered a 3-layer architecture: DistilBERT intent detection, spaCy/Regex NLP extraction, and Gemini 2.5 Flash verification\nFine-tuned DistilBERT in PyTorch with custom augmented data to eliminate false alarms on legitimate financial news",
+      "tech_stack": [
+        "PyTorch",
+        "DistilBERT",
+        "NLP",
+        "Gemini API",
+        "Kaggle Datasets",
+        "Docker",
+        "Streamlit"
+      ],
+      "links": [
+        "GitHub",
+        "Dataset",
+        "Live Demo"
+      ],
+      "raw_text": "98.5% Accuracy & Custom Dataset\nFeatured\n\nAI/ML\n\nAI Financial Scam Detection Engine\n\nApril 2026 – May 2026\n\nCurated and published the \"Financial Scam and Deceptive Text Meta-Dataset\" on Kaggle for benchmark training\nEngineered a 3-layer architecture: DistilBERT intent detection, spaCy/Regex NLP extraction, and Gemini 2.5 Flash verification\nFine-tuned DistilBERT in PyTorch with custom augmented data to eliminate false alarms on legitimate financial news\nPyTorch\nDistilBERT\nNLP\nGemini API\nKaggle Datasets\nDocker\nStreamlit\nGitHub\nDataset\nLive Demo"
     },
     {
-      "name": "",
-      "date": "",
-      "description": "",
-      "tech_stack": [],
-      "github_url": ""
+      "name": "AI eBook Generator",
+      "period": "Nov 2025 – Dec 2025",
+      "description": "Full-stack AI-powered eBook platform (React/Vite + Node.js/Express/MongoDB) using the Gemini API\nJWT authentication, RESTful APIs, protected routing for secure user management\nResponsive Tailwind CSS dashboard for generating, reading, and editing AI-generated eBooks",
+      "tech_stack": [
+        "MERN",
+        "Gemini API",
+        "JWT",
+        "Tailwind CSS",
+        "REST API"
+      ],
+      "links": [
+        "GitHub"
+      ],
+      "raw_text": "Featured\n\nFULL-STACK\n\nAI eBook Generator\n\nNov 2025 – Dec 2025\n\nFull-stack AI-powered eBook platform (React/Vite + Node.js/Express/MongoDB) using the Gemini API\nJWT authentication, RESTful APIs, protected routing for secure user management\nResponsive Tailwind CSS dashboard for generating, reading, and editing AI-generated eBooks\nMERN\nGemini API\nJWT\nTailwind CSS\nREST API\nGitHub"
     },
     {
-      "name": "",
-      "date": "",
-      "description": "",
-      "tech_stack": [],
-      "github_url": ""
+      "name": "Trippy (Travel App)",
+      "period": "2025",
+      "description": "React + Vite single-page application scaffold for a travel/trip-planning concept\nConfigured with ESLint for code quality",
+      "tech_stack": [
+        "React",
+        "Vite",
+        "JavaScript"
+      ],
+      "links": [
+        "GitHub",
+        "Live Demo"
+      ],
+      "raw_text": "Featured\n\nFULL-STACK\n\nTrippy (Travel App)\n\n2025\n\nReact + Vite single-page application scaffold for a travel/trip-planning concept\nConfigured with ESLint for code quality\nReact\nVite\nJavaScript\nGitHub\nLive Demo"
     },
     {
-      "name": "",
-      "date": "",
-      "description": "",
-      "tech_stack": [],
-      "github_url": ""
+      "name": "DNS Cache Monitoring Tool",
+      "period": "2025",
+      "description": "Python GUI tool (Tkinter) that scans the network for connected devices and DNS cache entries\nCross-checks IPs against the VirusTotal API for malicious activity\nSends automated email alerts with detailed threat reports when malicious IPs are detected",
+      "tech_stack": [
+        "Python",
+        "Tkinter",
+        "Networking",
+        "VirusTotal API",
+        "Security"
+      ],
+      "links": [
+        "GitHub"
+      ],
+      "raw_text": "Featured\n\nNETWORKING / SECURITY\n\nDNS Cache Monitoring Tool\n\n2025\n\nPython GUI tool (Tkinter) that scans the network for connected devices and DNS cache entries\nCross-checks IPs against the VirusTotal API for malicious activity\nSends automated email alerts with detailed threat reports when malicious IPs are detected\nPython\nTkinter\nNetworking\nVirusTotal API\nSecurity\nGitHub"
     },
     {
-      "name": "",
-      "date": "",
-      "description": "",
-      "tech_stack": [],
-      "github_url": ""
+      "name": "Task Manager Web App",
+      "period": "2026",
+      "description": "Full-stack task management app built with Next.js 15 (App Router) and TypeScript\nRESTful Next.js API routes (GET/POST/PUT/DELETE) for complete task CRUD\nResponsive Tailwind CSS grid UI with priority, status, and inline form validation",
+      "tech_stack": [
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS",
+        "REST API"
+      ],
+      "links": [
+        "GitHub",
+        "Live Demo"
+      ],
+      "raw_text": "FULL-STACK\n\nTask Manager Web App\n\n2026\n\nFull-stack task management app built with Next.js 15 (App Router) and TypeScript\nRESTful Next.js API routes (GET/POST/PUT/DELETE) for complete task CRUD\nResponsive Tailwind CSS grid UI with priority, status, and inline form validation\nNext.js\nTypeScript\nTailwind CSS\nREST API\nGitHub\nLive Demo"
     },
     {
-      "name": "",
-      "date": "",
-      "description": "",
-      "tech_stack": [],
-      "github_url": ""
+      "name": "CRUD App (Client + Server)",
+      "period": "2026",
+      "description": "JavaScript CRUD application with a separate client app and Node.js server\nDemonstrates create/read/update/delete operations across a client-server split",
+      "tech_stack": [
+        "JavaScript",
+        "Node.js",
+        "REST API"
+      ],
+      "links": [
+        "GitHub"
+      ],
+      "raw_text": "FULL-STACK\n\nCRUD App (Client + Server)\n\n2026\n\nJavaScript CRUD application with a separate client app and Node.js server\nDemonstrates create/read/update/delete operations across a client-server split\nJavaScript\nNode.js\nREST API\nGitHub"
     },
     {
-      "name": "",
-      "date": "",
-      "description": "",
-      "tech_stack": [],
-      "github_url": ""
+      "name": "Study Tracker",
+      "period": "2025",
+      "description": "Study tracking application built with C# and ASP.NET-style HTML views\nTracks study sessions/progress with a Visual Studio solution structure",
+      "tech_stack": [
+        "C#",
+        "ASP.NET",
+        "HTML",
+        "CSS"
+      ],
+      "links": [
+        "GitHub"
+      ],
+      "raw_text": "FULL-STACK\n\nStudy Tracker\n\n2025\n\nStudy tracking application built with C# and ASP.NET-style HTML views\nTracks study sessions/progress with a Visual Studio solution structure\nC#\nASP.NET\nHTML\nCSS\nGitHub"
     },
     {
-      "name": "",
-      "date": "",
-      "description": "",
-      "tech_stack": [],
-      "github_url": ""
+      "name": "RepoRoast",
+      "period": "2026",
+      "description": "Node.js CLI tool that grades a GitHub repository's maintainer responsiveness\nConsumes the GitHub REST API; supports authenticated requests via GITHUB_TOKEN to avoid rate limits",
+      "tech_stack": [
+        "Node.js",
+        "GitHub API",
+        "CLI"
+      ],
+      "links": [
+        "GitHub"
+      ],
+      "raw_text": "DEV TOOLING\n\nRepoRoast\n\n2026\n\nNode.js CLI tool that grades a GitHub repository's maintainer responsiveness\nConsumes the GitHub REST API; supports authenticated requests via GITHUB_TOKEN to avoid rate limits\nNode.js\nGitHub API\nCLI\nGitHub"
+    },
+    {
+      "name": "NovaMart — Database Systems Lab Project",
+      "period": "Spring 2026",
+      "description": "Advanced Database Management Systems (ADBMS) lab project\nPL/pgSQL and T-SQL stored procedures, triggers, and queries across 12 structured parts\nIncludes a full lab report (ADBMS Lab Project Spring 2026.pdf)",
+      "tech_stack": [
+        "PostgreSQL",
+        "PL/pgSQL",
+        "T-SQL",
+        "SQL Server"
+      ],
+      "links": [
+        "GitHub"
+      ],
+      "raw_text": "DATABASE / ADBMS\n\nNovaMart — Database Systems Lab Project\n\nSpring 2026\n\nAdvanced Database Management Systems (ADBMS) lab project\nPL/pgSQL and T-SQL stored procedures, triggers, and queries across 12 structured parts\nIncludes a full lab report (ADBMS Lab Project Spring 2026.pdf)\nPostgreSQL\nPL/pgSQL\nT-SQL\nSQL Server\nGitHub"
+    },
+    {
+      "name": "Hospital Management System",
+      "period": "2025",
+      "description": "C++/C console-based hospital management system\nCore OOP/data-structures coursework project",
+      "tech_stack": [
+        "C++",
+        "C",
+        "OOP"
+      ],
+      "links": [
+        "GitHub"
+      ],
+      "raw_text": "C++ CONSOLE APP\n\nHospital Management System\n\n2025\n\nC++/C console-based hospital management system\nCore OOP/data-structures coursework project\nC++\nC\nOOP\nGitHub"
+    },
+    {
+      "name": "Gloria Beans Coffee Store",
+      "period": "2025",
+      "description": "Multi-page static coffee shop website (Home, Store, About, Franchises, Contact, Login)\nBuilt with plain HTML and CSS",
+      "tech_stack": [
+        "HTML",
+        "CSS"
+      ],
+      "links": [
+        "GitHub",
+        "Live Demo"
+      ],
+      "raw_text": "STATIC WEBSITE\n\nGloria Beans Coffee Store\n\n2025\n\nMulti-page static coffee shop website (Home, Store, About, Franchises, Contact, Login)\nBuilt with plain HTML and CSS\nHTML\nCSS\nGitHub\nLive Demo"
+    },
+    {
+      "name": "Tic Tac Toe",
+      "period": "2024",
+      "description": "Classic Tic Tac Toe game built with vanilla HTML, CSS, and JavaScript",
+      "tech_stack": [
+        "JavaScript",
+        "HTML",
+        "CSS"
+      ],
+      "links": [
+        "GitHub",
+        "Live Demo"
+      ],
+      "raw_text": "MINI PROJECT\n\nTic Tac Toe\n\n2024\n\nClassic Tic Tac Toe game built with vanilla HTML, CSS, and JavaScript\nJavaScript\nHTML\nCSS\nGitHub\nLive Demo"
     }
-  ]
+  ],
+  "experience": {
+    "overview": "Fellowship training under real deadlines, plus community leadership that keeps me shipping alongside peers.",
+    "roles": [
+      {
+        "period": "July 2026 – Present",
+        "location": "Islamabad, Pakistan (Onsite)",
+        "title": "AI/ML Engineer Intern",
+        "company": "DataX Technologies",
+        "highlights": [
+          "Architected an end-to-end Urdu voice AI agent (STT → LLM → TTS) using Deepgram Nova-3, GROQ Cloud API (Qwen3), and Piper TTS via LiveKit Agents SDK, targeting sub-650ms p95 latency.",
+          "Designed a filtered RAG lookup (<500 tokens/turn) to ground LLM responses against an approved knowledge base.",
+          "Deployed the full stack on Railway — Docker, FastAPI dashboard, PTCL SIP telephony, MongoDB Atlas, Cloudflare R2."
+        ]
+      },
+      {
+        "period": "June 2025 – November 2025",
+        "location": "Remote",
+        "title": "Software Engineer Fellow",
+        "company": "Dev Weekends Fellowship",
+        "highlights": [
+          "Solved 70+ LeetCode problems to strengthen DSA fundamentals",
+          "Engineered 4+ MERN stack projects in collaborative environments"
+        ]
+      }
+    ],
+    "community_roles": [
+      "Microsoft Learn Student Ambassadors (MLSA) Think Tank",
+      "Google Developer Groups (GDG) on Campus — Technical Team"
+    ],
+    "raw_text": "EXPERIENCE\n\nWhere I've built momentum\n\nFellowship training under real deadlines, plus community leadership that keeps me shipping alongside peers.\n\nJuly 2026 – Present\nIslamabad, Pakistan (Onsite)\nAI/ML Engineer Intern\n\nDataX Technologies\n\nArchitected an end-to-end Urdu voice AI agent (STT → LLM → TTS) using Deepgram Nova-3, GROQ Cloud API (Qwen3), and Piper TTS via LiveKit Agents SDK, targeting sub-650ms p95 latency.\nDesigned a filtered RAG lookup (<500 tokens/turn) to ground LLM responses against an approved knowledge base.\nDeployed the full stack on Railway — Docker, FastAPI dashboard, PTCL SIP telephony, MongoDB Atlas, Cloudflare R2.\nJune 2025 – November 2025\nRemote\nSoftware Engineer Fellow\n\nDev Weekends Fellowship\n\nSolved 70+ LeetCode problems to strengthen DSA fundamentals\nEngineered 4+ MERN stack projects in collaborative environments\nCOMMUNITY ROLES\n\nMicrosoft Learn Student Ambassadors (MLSA) Think Tank\n\nGoogle Developer Groups (GDG) on Campus — Technical Team"
+  }
 }

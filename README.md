@@ -1,6 +1,6 @@
 # Notes Generator — Portfolio Skills → PDF Study Notes
 
-This repo has a simple three-step flow: scrape the portfolio into `portfolio_data.json`, generate study notes into `output/md/`, then convert those notes into PDFs in `output/pdf/`.
+This repo has a single automatic flow: run one script to scrape the portfolio into `portfolio_data.json`, then generate one note per scraped skill, immediately convert that note to PDF, and move on to the next skill.
 
 ## Prerequisites
 
@@ -20,9 +20,7 @@ The short version is:
 3. Run `playwright install chromium`.
 4. Copy `.env.example` to `.env` and fill in the values.
 5. Start your local OpenAI-compatible server and point `LLM_BASE_URL` at it.
-6. Run `python portfolio_scraper.py`.
-7. Run `python generate_notes.py`.
-8. Run `python convert_to_pdf.py`.
+6. Run `python run_all.py`.
 
 Expected outputs:
 
@@ -33,6 +31,7 @@ Expected outputs:
 ## Project Layout
 
 ```text
+run_all.py             # Full automated pipeline
 portfolio_scraper.py   # Scrapes the portfolio site and caches JSON
 generate_notes.py      # Main notes pipeline
 convert_to_pdf.py      # Markdown to PDF conversion
@@ -40,7 +39,7 @@ search_client.py       # Optional DuckDuckGo context fetch
 llm_client.py          # OpenAI-compatible client wrapper
 config.py              # Environment and pipeline settings
 prompts/templates.py   # Prompt templates for each generation stage
-templates/notes_style.css
+templates/notes_style.css   # legacy reference stylesheet; PDF styling is implemented in convert_to_pdf.py
 output/md/
 output/pdf/
 ```

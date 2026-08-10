@@ -24,7 +24,7 @@ flowchart LR
 - `llm_client.py` wraps the OpenAI-compatible client and handles retries.
 - `search_client.py` adds optional DuckDuckGo context when enabled.
 - `prompts/templates.py` stores the chained prompt templates used by the notes pipeline.
-- `templates/notes_style.css` controls the PDF styling.
+- `convert_to_pdf.py` controls the PDF styling and per-topic theme rendering.
 - `portfolio_scraper.py` is the single scraper entrypoint kept in the repo.
 
 ## Data Contracts

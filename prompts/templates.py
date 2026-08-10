@@ -61,11 +61,11 @@ Rules:
 - No preamble, no repeated theory text."""
 
 
-STAGE_2_5_PORTFOLIO_RELEVANCE = """You are matching a study-notes topic against a developer's real portfolio projects.
+STAGE_2_5_PORTFOLIO_RELEVANCE = """You are matching a study-notes topic against a developer's real portfolio projects and experience.
 
 Topic: {topic}
 
-Portfolio projects (name, description, tech stack):
+Portfolio entries (projects and experience):
 ---
 {portfolio_context}
 ---
@@ -75,16 +75,19 @@ Task: identify ONLY the portfolio projects that genuinely use or relate to
 have something to show.
 
 For each genuine match, write:
-- **Project:** name
-- **How {topic} is used:** 1-2 sentences, specific to what that project
-  actually does with it (not generic praise)
+- Put project matches under `### Projects`.
+- Put experience matches under `### Experience`.
+- For each match, write:
+  - **Project:** name, when the match is a project
+  - **Experience:** role/company, when the match is an experience item
+  - **How {topic} is used:** 1-2 sentences, specific to what that item actually does with it (not generic praise)
 
 Output ONLY this section in markdown, starting with a
 "## Where I've Used This" heading. If there are no genuine matches (or the
 portfolio list is empty), output exactly:
 
 ## Where I've Used This
-_No current portfolio project uses {topic} yet._
+_No current portfolio project or experience uses {topic} yet._
 
 No preamble, no repeated theory text."""
 
@@ -96,17 +99,17 @@ Based on this theory context (for reference only, don't repeat it):
 {stage1_output}
 ---
 
-Create an interview questions section with 12-15 questions total, organized as:
+Create an interview questions section with 18-22 questions total, organized as:
 
 ## Interview Questions
 
-### Beginner (4-5 questions)
-### Intermediate (4-5 questions)
-### Advanced (4-5 questions)
+### Beginner (6-7 questions)
+### Intermediate (6-7 questions)
+### Advanced (6-7 questions)
 
 For each question:
 - **Q:** the question
-- **A:** a concise, correct answer (2-5 sentences — enough to actually answer
+- **A:** a concise, correct answer (3-6 sentences — enough to actually answer
   it in an interview, not just a one-liner)
 
 Pick the questions that are ACTUALLY most commonly asked for {topic} in real
@@ -115,22 +118,68 @@ technical interviews — not generic filler questions.
 Output ONLY this section in markdown. No preamble."""
 
 
+STAGE_2_7_PITFALLS = """You are writing a "Common Pitfalls & Debugging" section for study notes on: {topic}
+
+Based on this theory context (for reference only, don't repeat it):
+---
+{stage1_output}
+---
+
+Create 6-10 real mistakes, gotchas, failure modes, or debugging traps that
+people commonly hit with {topic}.
+
+For each item:
+- State the pitfall clearly.
+- Explain why it happens.
+- Give a 2-3 sentence fix or debugging approach.
+
+Output ONLY this section in markdown, starting with "## Common Pitfalls & Debugging".
+No preamble."""
+
+
+STAGE_2_8_CHEATSHEET = """You are writing a compact "Quick Reference Cheat Sheet" for study notes on: {topic}
+
+Based on this theory context (for reference only, don't repeat it):
+---
+{stage1_output}
+---
+
+Create a dense quick-reference section for rapid pre-exam scanning.
+
+Requirements:
+- Keep it compact, not prose-heavy.
+- Use bullets, mini tables, or short grouped lists.
+- Include syntax, commands, key terms, common patterns, key APIs, and any
+  must-remember facts that help with recall.
+- Prefer dense recall over explanation.
+
+Output ONLY this section in markdown, starting with "## Quick Reference Cheat Sheet".
+No preamble."""
+
+
 STAGE_4_MERGE_POLISH = """You are finalizing a study notes document on: {topic}
 
-You are given four sections generated separately. Merge them into ONE
+You are given six sections generated separately. Merge them into ONE
 clean, well-formatted markdown document. Fix any redundancy, inconsistent
 terminology, or awkward transitions between sections, but do NOT shorten
-or remove content — just polish the seams.
+or remove content — just polish the seams. This should read as a
+comprehensive 15-20 page reference document — do not compress or drop
+sections for brevity.
 
 Add a single top-level title "# {topic} — Study Notes" and a short 2-3
 line intro paragraph at the very top.
 
 Place the "Where I've Used This" section right after the intro and before
-the theory levels. If it says no project uses this topic yet, keep that
-line as-is — do not invent a project to fill it.
+the theory levels. Place the "Common Pitfalls & Debugging" section right
+after Theory. Place the "Quick Reference Cheat Sheet" section near the end,
+right before Interview Questions. If it says no project uses this topic
+yet, keep that line as-is — do not invent a project to fill it.
 
 --- THEORY SECTION ---
 {stage1_output}
+
+--- PITFALLS SECTION ---
+{stage2_7_output}
 
 --- WHERE I'VE USED THIS SECTION ---
 {stage2_5_output}
@@ -138,8 +187,34 @@ line as-is — do not invent a project to fill it.
 --- ASCII DIAGRAMS SECTION ---
 {stage2_output}
 
+--- CHEAT SHEET SECTION ---
+{stage2_8_output}
+
 --- INTERVIEW QUESTIONS SECTION ---
 {stage3_output}
 
 Output ONLY the final merged markdown document, nothing else — no preamble,
 no "Here's the final document" text."""
+
+
+STAGE_5_REVISE_WITH_REFERENCES = """You are a senior editor polishing a study notes document on: {topic}.
+
+Current draft:
+---
+{draft_output}
+---
+
+Reference notes from earlier generated files in this pipeline:
+---
+{reference_notes}
+---
+
+Task:
+- Improve clarity, organization, and depth without reducing content quality.
+- Preserve technical accuracy and any useful detail already present.
+- Use the reference notes only as a quality/style benchmark.
+- Do not copy unrelated topic-specific facts from the references.
+- Do not shorten the document unless removing repetition makes it strictly better.
+- Keep the same Markdown structure unless a small structural improvement clearly helps.
+
+Return the improved markdown only. No preamble, no explanation."""

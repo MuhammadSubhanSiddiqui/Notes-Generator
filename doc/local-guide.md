@@ -32,8 +32,11 @@ nano .env
 LLM_BASE_URL=http://localhost:3001/v1
 LLM_API_KEY=replace-me
 LLM_MODEL=replace-with-your-model-name
+LLM_MODEL_CANDIDATES=
 ENABLE_SEARCH_CONTEXT=true
 ```
+
+If your freellmapi instance exposes many models, set `LLM_MODEL_CANDIDATES` to a comma-separated preference order. The app will try each model before failing the topic.
 
 ## Start the local model server
 
@@ -45,31 +48,19 @@ freellmapi serve --port 3001
 freellmapi serve --port 3001
 ```
 
-## Run the pipeline in order
+## Run the pipeline automatically
 
 ```powershell
-python portfolio_scraper.py
+python run_all.py
 ```
 
 ```text
-portfolio_data.json
+portfolio_data.json -> output/md/<topic-slug>.md -> output/pdf/<topic-slug>.pdf
 ```
 
-```powershell
-python generate_notes.py
-```
+`generate_notes.py` reads the `skills` list from `portfolio_data.json` and writes one markdown file per skill automatically.
 
-```text
-output/md/<topic-slug>.md
-```
-
-```powershell
-python convert_to_pdf.py
-```
-
-```text
-output/pdf/<topic-slug>.pdf
-```
+`run_all.py` converts each markdown file to PDF immediately after it is generated, before moving to the next skill.
 
 ## One-topic run
 

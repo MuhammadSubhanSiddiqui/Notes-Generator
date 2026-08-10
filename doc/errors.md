@@ -6,7 +6,7 @@
 - Empty or low-quality model output: verify `LLM_MODEL` matches a model name your local server actually exposes.
 - `ModuleNotFoundError: ddgs`: install the dependencies from `requirements.txt`, or set `ENABLE_SEARCH_CONTEXT=false`.
 - Playwright launch errors: run `playwright install chromium` after installing the Python packages.
-- WeasyPrint import or rendering errors: install the OS libraries required by WeasyPrint for your platform.
+- PDF conversion errors: reinstall the Python dependencies from `requirements.txt`; the PDF step now uses `reportlab`, so it should not need system libraries.
 
 ## Scraper Issues
 

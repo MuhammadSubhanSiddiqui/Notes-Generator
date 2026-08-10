@@ -11,6 +11,7 @@ Results are written to portfolio_data.json for caching.
 
 import asyncio
 import json
+import re
 import sys
 from argparse import ArgumentParser
 from datetime import datetime, timezone
@@ -24,17 +25,20 @@ class PortfolioScraper:
     """Scrapes the portfolio site and extracts skills/projects."""
 
     BASE_URL = "https://muhammadsubhansiddiqui.netlify.app/"
+    SKILLS_SECTION_INDEX = 2
+    PROJECT_SECTION_INDEX = 3
+    EXPERIENCE_SECTION_INDEX = 4
 
-    # CSS selectors (discovered via Playwright discovery)
-    SKILLS_SELECTOR = "div.grid.grid-cols-1.gap-5.sm\\:grid-cols-2.lg\\:grid-cols-3"
-    SKILL_CATEGORY_HEADING = "h3.font-heading.text-base.font-semibold"
-    SKILL_TAGS = "div.flex.flex-wrap.gap-2 > span"
-
-    PROJECTS_SELECTOR = "article"
-    PROJECT_TITLE = "h3.font-heading.text-xl.font-bold"
-    PROJECT_DATE = "p.text-sm.text-text-secondary"
-    PROJECT_DESCRIPTION = "ul.space-y-2 > li"
-    PROJECT_TECH_TAGS = "div.flex.flex-wrap.gap-2 > span"
+    DATE_PATTERN = re.compile(
+        r"^(?:"
+        r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}"
+        r"(?:\s*[–-]\s*(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}|\s*[–-]\s*Present)?"
+        r"|\d{4}"
+        r"|(?:Spring|Summer|Fall|Winter)\s+\d{4}"
+        r")$",
+        re.IGNORECASE,
+    )
+    LINK_LABELS = {"GitHub", "Live Demo", "Dataset", "Resume"}
 
     def __init__(self, headless: bool = True, base_url: Optional[str] = None):
         self.headless = headless
@@ -69,10 +73,14 @@ class PortfolioScraper:
             print("Extracting projects...")
             projects = await self._extract_projects()
 
+            print("Extracting experience...")
+            experience = await self._extract_experience()
+
             result = {
                 "scraped_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                 "skills": skills,
                 "projects": projects,
+                "experience": experience,
             }
 
             print(f"✓ Scraped {len(skills)} skills and {len(projects)} projects")
@@ -84,23 +92,35 @@ class PortfolioScraper:
 
     async def _extract_skills(self) -> List[str]:
         """Extract all skills from the skills section."""
-        skills = set()
-
         try:
-            skills_section = await self._page.query_selector(self.SKILLS_SELECTOR)
-            if not skills_section:
+            section = self._page.locator("section").nth(self.SKILLS_SECTION_INDEX)
+            text = (await section.inner_text()).strip()
+            lines = self._split_lines(text)
+            if len(lines) < 4:
                 print("  Warning: Skills section not found", file=sys.stderr)
                 return []
-
-            # Get all skill tags (all spans inside skill categories)
-            skill_tags = await skills_section.query_selector_all(self.SKILL_TAGS)
-            for tag in skill_tags:
-                text = await tag.inner_text()
-                text = text.strip()
-                if text:
-                    skills.add(text)
-
-            return sorted(skills)
+            category_headers = {
+                "All",
+                "AI & ML",
+                "Full-Stack",
+                "Tools",
+                "Languages",
+                "AI/ML & Data",
+                "Full-Stack & Frameworks",
+                "Databases",
+                "Networking & Security",
+                "Realtime & Voice AI",
+                "Tools & DevOps",
+            }
+            skills = []
+            for line in lines:
+                if line in {"SKILLS", "Technical toolkit"}:
+                    continue
+                if line.startswith("From ") or line in category_headers:
+                    continue
+                if line not in skills:
+                    skills.append(line)
+            return skills
 
         except Exception as e:
             print(f"  Warning: Failed to extract skills: {e}", file=sys.stderr)
@@ -108,71 +128,126 @@ class PortfolioScraper:
 
     async def _extract_projects(self) -> List[Dict[str, Any]]:
         """Extract all projects from the projects section."""
-        projects = []
-
         try:
-            articles = await self._page.query_selector_all(self.PROJECTS_SELECTOR)
-            if not articles:
+            section = self._page.locator("section").nth(self.PROJECT_SECTION_INDEX)
+            articles = section.locator("article")
+            count = await articles.count()
+            if not count:
                 print("  Warning: Projects section not found", file=sys.stderr)
                 return []
 
-            for article in articles:
-                try:
-                    project = await self._extract_single_project(article)
-                    if project:
-                        projects.append(project)
-                except Exception as e:
-                    print(f"  Warning: Failed to extract single project: {e}", file=sys.stderr)
-                    continue
-
+            projects = []
+            for index in range(count):
+                text = (await articles.nth(index).inner_text()).strip()
+                project = self._parse_project_card(text)
+                if project:
+                    projects.append(project)
             return projects
 
         except Exception as e:
             print(f"  Warning: Failed to extract projects: {e}", file=sys.stderr)
             return []
 
-    async def _extract_single_project(self, article) -> Dict[str, Any]:
-        """Extract data from a single project article."""
-        # Title
-        title_elem = await article.query_selector(self.PROJECT_TITLE)
-        title = await title_elem.inner_text() if title_elem else ""
+    async def _extract_experience(self) -> Dict[str, Any]:
+        try:
+            section = self._page.locator("section").nth(self.EXPERIENCE_SECTION_INDEX)
+            text = (await section.inner_text()).strip()
+            return self._parse_experience_section(text)
+        except Exception as e:
+            print(f"  Warning: Failed to extract experience: {e}", file=sys.stderr)
+            return {"overview": "", "roles": [], "community_roles": [], "raw_text": ""}
 
-        # Date
-        date_elem = await article.query_selector(self.PROJECT_DATE)
-        date = await date_elem.inner_text() if date_elem else ""
+    def _split_lines(self, text: str) -> List[str]:
+        return [line.strip() for line in text.splitlines() if line.strip()]
 
-        # Description (first 3 bullets)
-        desc_elems = await article.query_selector_all(self.PROJECT_DESCRIPTION)
-        descriptions = []
-        for elem in desc_elems[:3]:
-            text = await elem.inner_text()
-            if text:
-                descriptions.append(text)
-        description = "\n".join(descriptions)
+    def _is_date_line(self, line: str) -> bool:
+        return bool(self.DATE_PATTERN.match(line))
 
-        # Tech stack tags
-        tech_tags = await article.query_selector_all(self.PROJECT_TECH_TAGS)
-        tech_stack = []
-        for tag in tech_tags:
-            text = await tag.inner_text()
-            if text:
-                tech_stack.append(text.strip())
+    def _is_label_line(self, line: str) -> bool:
+        return line in {"Featured", "PROJECTS", "EXPERIENCE", "ABOUT", "SKILLS"}
 
-        # GitHub link (first link with github icon)
-        github_link = ""
-        links = await article.query_selector_all("a[href*='github']")
-        for link in links:
-            href = await link.get_attribute("href", "")
-            if href and "github" in href.lower():
-                github_link = href
+    def _looks_like_tag(self, line: str) -> bool:
+        return (
+            line in self.LINK_LABELS
+            or len(line) <= 40
+            and len(line.split()) <= 4
+            and not line.endswith(".")
+            and not self._is_date_line(line)
+            and not self._is_label_line(line)
+        )
+
+    def _parse_project_card(self, text: str) -> Optional[Dict[str, Any]]:
+        lines = self._split_lines(text)
+        if not lines:
+            return None
+
+        date_index = next((index for index, line in enumerate(lines) if self._is_date_line(line)), None)
+        if date_index is None:
+            return None
+
+        title = ""
+        for index in range(date_index - 1, -1, -1):
+            candidate = lines[index]
+            if not self._is_label_line(candidate) and not candidate.startswith("+"):
+                title = candidate
                 break
 
+        tail_index = len(lines)
+        for index in range(len(lines) - 1, date_index, -1):
+            if self._looks_like_tag(lines[index]):
+                tail_index = index
+            else:
+                break
+
+        description_lines = lines[date_index + 1 : tail_index]
+        tag_lines = lines[tail_index:]
+
         return {
-            "name": title.strip(),
-            "date": date.strip(),
-            "description": description.strip(),
-            "tech_stack": tech_stack,
-            "github_url": github_link,
+            "name": title,
+            "period": lines[date_index],
+            "description": "\n".join(description_lines),
+            "tech_stack": [line for line in tag_lines if line not in self.LINK_LABELS],
+            "links": [line for line in tag_lines if line in self.LINK_LABELS],
+            "raw_text": text,
+        }
+
+    def _parse_experience_section(self, text: str) -> Dict[str, Any]:
+        lines = self._split_lines(text)
+        if not lines:
+            return {"overview": "", "roles": [], "community_roles": [], "raw_text": ""}
+
+        overview = []
+        roles = []
+        community_roles = []
+
+        date_indices = [index for index, line in enumerate(lines) if self._is_date_line(line)]
+        community_index = next((index for index, line in enumerate(lines) if line == "COMMUNITY ROLES"), None)
+
+        if date_indices:
+            overview = lines[2:date_indices[0]] if len(lines) > 2 else []
+
+        for position, date_index in enumerate(date_indices):
+            next_boundary = date_indices[position + 1] if position + 1 < len(date_indices) else (
+                community_index if community_index is not None else len(lines)
+            )
+            roles.append(
+                {
+                    "period": lines[date_index],
+                    "location": lines[date_index + 1] if date_index + 1 < next_boundary else "",
+                    "title": lines[date_index + 2] if date_index + 2 < next_boundary else "",
+                    "company": lines[date_index + 3] if date_index + 3 < next_boundary else "",
+                    "highlights": lines[date_index + 4 : next_boundary],
+                }
+            )
+
+        if community_index is not None:
+            community_roles = lines[community_index + 1 :]
+
+        return {
+            "overview": "\n".join(overview),
+            "roles": roles,
+            "community_roles": community_roles,
+            "raw_text": text,
         }
 
 
