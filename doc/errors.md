@@ -18,7 +18,7 @@
 
 - Missing Markdown output: verify `config.TOPICS` is not empty, or pass a topic name directly to `generate_notes.py`.
 - PDF conversion skips a file: confirm the matching `.md` file exists in `output/md/`.
-- Broken ASCII alignment in PDFs: keep the `pre` styles in `templates/notes_style.css` intact.
+- Broken ASCII alignment in PDFs: shorten the widest line in the diagram, or reduce the number of columns in the cheat sheet. The PDF converter now auto-scales code blocks, so the issue is usually the diagram width.
 
 ## Recovery Steps
 

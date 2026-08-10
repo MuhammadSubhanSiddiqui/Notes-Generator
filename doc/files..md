@@ -14,7 +14,7 @@ The filename is kept as `files..md` for compatibility with the existing tree.
 ## Prompt and Style Assets
 
 - `prompts/templates.py` - Prompt templates for the generation stages.
-- `templates/notes_style.css` - PDF styling.
+- `convert_to_pdf.py` - PDF styling and rendering live here.
 
 ## Output Directories
 

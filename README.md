@@ -39,7 +39,6 @@ search_client.py       # Optional DuckDuckGo context fetch
 llm_client.py          # OpenAI-compatible client wrapper
 config.py              # Environment and pipeline settings
 prompts/templates.py   # Prompt templates for each generation stage
-templates/notes_style.css   # legacy reference stylesheet; PDF styling is implemented in convert_to_pdf.py
 output/md/
 output/pdf/
 ```
@@ -50,13 +49,11 @@ output/pdf/
 notes-generator/
 ├── config.py              # topics, portfolio list, LLM + search settings
 ├── llm_client.py          # OpenAI-compatible client + retry logic
-├── generate_notes.py      # main pipeline: 5-stage prompt loop
+├── generate_notes.py      # main pipeline: multi-stage prompt loop
 ├── search_client.py       # DuckDuckGo search context (ddgs)
 ├── convert_to_pdf.py      # md -> styled PDF
 ├── prompts/
-│   └── templates.py       # the 5 chained prompts (search/theory/ascii/portfolio/merge)
-├── templates/
-│   └── notes_style.css    # PDF styling (headers, code blocks, etc.)
+│   └── templates.py       # the chained prompts (search/theory/ascii/pitfalls/cheatsheet/portfolio/interview/merge/revise)
 ├── .venv/                 # virtual environment (gitignored)
 └── output/
     ├── md/
@@ -72,8 +69,7 @@ notes-generator/
 - **Search errors in the log**: `ddgs` not installed or network blocked —
   the pipeline continues without search context, or set
   `ENABLE_SEARCH_CONTEXT=false`.
-- **ASCII diagrams look broken in PDF**: don't edit `notes_style.css`'s
-  `pre` block — `white-space: pre` is required to preserve alignment.
+- **ASCII diagrams look broken in PDF**: the converter scales code blocks automatically, so if a diagram looks clipped, widen the ASCII box or shorten the line length.
 - **Rate limits / slow**: 6 calls per topic (5 LLM + 1 optional search);
   for many topics, consider adding a `time.sleep()` between topics in
   `generate_notes.py`'s main loop.
