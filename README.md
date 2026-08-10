@@ -1,77 +1,49 @@
 # Notes Generator — Portfolio Skills → PDF Study Notes
 
-Generates beginner→advanced study notes (theory + ASCII architecture
-diagrams + portfolio relevance + interview Q&A) per skill, using a
-5-stage chained-prompt loop against your local OpenAI-compatible
-freellmapi server, then converts to styled PDFs.
+This repo has a simple three-step flow: scrape the portfolio into `portfolio_data.json`, generate study notes into `output/md/`, then convert those notes into PDFs in `output/pdf/`.
 
-A DuckDuckGo search pass (`search_client.py`) pulls recent context before
-the theory stage, so notes reflect current versions and best practices
-instead of only the LLM's training data.
+## Prerequisites
 
-## 1. Set up the virtual environment
+- Python 3.11 or newer
+- Windows PowerShell, or macOS/Linux terminal
+- A local OpenAI-compatible server such as `freellmapi`
+- Chromium installed for Playwright after the Python packages are installed
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\activate        # PowerShell (Windows)
-# or: source .venv/bin/activate # macOS / Linux
+## Quickstart
+
+Full setup commands are in [doc/local-guide.md](doc/local-guide.md).
+
+The short version is:
+
+1. Create and activate a virtual environment.
+2. Run `pip install -r requirements.txt`.
+3. Run `playwright install chromium`.
+4. Copy `.env.example` to `.env` and fill in the values.
+5. Start your local OpenAI-compatible server and point `LLM_BASE_URL` at it.
+6. Run `python portfolio_scraper.py`.
+7. Run `python generate_notes.py`.
+8. Run `python convert_to_pdf.py`.
+
+Expected outputs:
+
+- `portfolio_data.json`
+- `output/md/<topic-slug>.md`
+- `output/pdf/<topic-slug>.pdf`
+
+## Project Layout
+
+```text
+portfolio_scraper.py   # Scrapes the portfolio site and caches JSON
+generate_notes.py      # Main notes pipeline
+convert_to_pdf.py      # Markdown to PDF conversion
+search_client.py       # Optional DuckDuckGo context fetch
+llm_client.py          # OpenAI-compatible client wrapper
+config.py              # Environment and pipeline settings
+prompts/templates.py   # Prompt templates for each generation stage
+templates/notes_style.css
+output/md/
+output/pdf/
 ```
-
-## 2. Install dependencies
-
-```bash
-pip install openai markdown weasyprint ddgs
-```
-
-`weasyprint` needs system libraries for font/CSS rendering:
-- **Windows**: see https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#windows
-- **Mac**: `brew install pango`
-- **Linux**: `sudo apt install libpango-1.0-0 libpangocairo-1.0-0`
-
-If weasyprint gives you trouble, alternative: `pip install pdfkit` +
-install `wkhtmltopdf` binary, and swap `convert_to_pdf.py`'s HTML(...)
-call for pdfkit — ask me if you want that version instead.
-
-`ddgs` is the DuckDuckGo search package for the optional search-context
-pass. If you don't want the extra network calls, set
-`ENABLE_SEARCH_CONTEXT=false` in `config.py` and skip installing it.
-
-## 3. Confirm your freellmapi server is running
-
-```bash
-curl http://localhost:3001/v1/models
-```
-
-Should return a model list. If not, start your local freellmapi server first.
-
-## 4. Configure
-
-Edit `config.py`:
-- `LLM_MODEL` — set to whatever model name your local proxy expects
-- `TOPICS` — add your skills (uncomment/add lines). Start with 1-2 to
-  confirm quality before scaling to your full portfolio list.
-- `PORTFOLIO_PROJECTS` — optional: add your real portfolio projects
-  (name, description, stack) so each topic gets a "Where I've Used This"
-  section tied to projects that genuinely use it.
-- `ENABLE_SEARCH_CONTEXT` — set to `false` to skip the DuckDuckGo pass.
-
-## 5. Generate notes
-
-```bash
-python generate_notes.py                # runs everything in TOPICS
-python generate_notes.py "Docker"        # or just one topic ad-hoc
-```
-
-Markdown files land in `output/md/<topic-slug>.md`.
-
-## 6. Convert to PDF
-
-```bash
-python convert_to_pdf.py                 # converts all .md files
-python convert_to_pdf.py reactjs.md       # or just one
-```
-
-Styled PDFs land in `output/pdf/`.
 
 ## Project structure
 
@@ -91,23 +63,6 @@ notes-generator/
     ├── md/
     └── pdf/
 ```
-
-## Why chained LLM calls instead of 1 big prompt?
-
-Loop-engineering: chaining focused prompts (search context → theory →
-diagrams → portfolio relevance → Q&A → merge) gets more reliable depth
-per section than one mega-prompt, which tends to shortchange the ASCII
-diagrams and interview questions to save room. The search pass keeps
-version numbers and best practices current; the portfolio pass
-personalizes the notes to your actual projects; the merge pass stitches
-everything into one polished doc.
-
-## Next step: Phase 2 — auto-extract skills from portfolio
-
-Once this pipeline is confirmed on a few manual topics, we can add a
-scraper (Playwright/Selenium, since your portfolio is a React SPA and
-needs JS rendering) that pulls your skills list automatically and feeds
-it into `TOPICS`. Say the word when you're ready for that piece.
 
 ## Troubleshooting
 

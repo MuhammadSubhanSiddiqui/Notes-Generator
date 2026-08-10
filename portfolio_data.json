@@ -1,0 +1,130 @@
+{
+  "scraped_at": "2026-08-10T19:04:14.381482Z",
+  "skills": [
+    "ASP.NET",
+    "C#",
+    "C/C++",
+    "Cisco Networking",
+    "Cloudflare R2",
+    "Computer Vision",
+    "DNS/Network Monitoring",
+    "Deepgram (STT)",
+    "DistilBERT",
+    "Docker",
+    "ESLint",
+    "Express.js",
+    "FastAPI",
+    "Fine-tuning",
+    "Git",
+    "GitHub",
+    "GitHub REST API",
+    "Google Colab",
+    "Groq Cloud (Qwen3)",
+    "Hugging Face",
+    "Hugging Face Spaces",
+    "JWT Authentication",
+    "JavaScript",
+    "LLM Integration (Gemini API)",
+    "LangChain",
+    "LiveKit Agents",
+    "Matplotlib",
+    "MongoDB",
+    "MongoDB Atlas",
+    "NLP",
+    "Network Troubleshooting",
+    "Next.js",
+    "Node.js",
+    "NumPy",
+    "OpenCV",
+    "PL/pgSQL",
+    "Piper TTS",
+    "PostgreSQL",
+    "Prompt Engineering",
+    "PyTorch",
+    "Python",
+    "RAG",
+    "RESTful APIs",
+    "Railway",
+    "ReactJS",
+    "Real-time Audio Pipelines",
+    "SQL",
+    "SQL Server (T-SQL)",
+    "Scikit-image",
+    "Scikit-learn",
+    "Streamlit",
+    "Tailwind CSS",
+    "Tkinter (GUI Tooling)",
+    "Transfer Learning",
+    "Transformers",
+    "TypeScript",
+    "VS Code",
+    "VirusTotal API",
+    "Vite",
+    "spaCy"
+  ],
+  "projects": [
+    {
+      "name": "",
+      "date": "",
+      "description": "",
+      "tech_stack": [],
+      "github_url": ""
+    },
+    {
+      "name": "",
+      "date": "",
+      "description": "",
+      "tech_stack": [],
+      "github_url": ""
+    },
+    {
+      "name": "",
+      "date": "",
+      "description": "",
+      "tech_stack": [],
+      "github_url": ""
+    },
+    {
+      "name": "",
+      "date": "",
+      "description": "",
+      "tech_stack": [],
+      "github_url": ""
+    },
+    {
+      "name": "",
+      "date": "",
+      "description": "",
+      "tech_stack": [],
+      "github_url": ""
+    },
+    {
+      "name": "",
+      "date": "",
+      "description": "",
+      "tech_stack": [],
+      "github_url": ""
+    },
+    {
+      "name": "",
+      "date": "",
+      "description": "",
+      "tech_stack": [],
+      "github_url": ""
+    },
+    {
+      "name": "",
+      "date": "",
+      "description": "",
+      "tech_stack": [],
+      "github_url": ""
+    },
+    {
+      "name": "",
+      "date": "",
+      "description": "",
+      "tech_stack": [],
+      "github_url": ""
+    }
+  ]
+}
