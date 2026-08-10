@@ -80,18 +80,6 @@ MAX_RETRIES = 3
 RETRY_BACKOFF_SECONDS = 5
 REQUEST_TIMEOUT = 180  # seconds — theory/ASCII generations can run long
 
-STAGE_MAX_TOKENS = {
-    "theory": 6000,
-    "ascii-diagrams": 4500,
-    "pitfalls": 2500,
-    "cheatsheet": 2500,
-    "portfolio-relevance": 1000,
-    "interview-questions": 6000,
-    "merge-polish": 8000,
-    "reference-revise": 8000,
-}
-DEFAULT_MAX_TOKENS = 4000
-
 # ---- Web search (DuckDuckGo, no API key — see search_client.py) ----
 # Adds a light "current context" pass before Stage 1, so notes aren't purely
 # frozen to the local model's training data. Safe to disable if you don't

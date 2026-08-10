@@ -9,7 +9,6 @@ import sys
 from openai import OpenAI, APIConnectionError, APITimeoutError, APIStatusError
 
 from config import (
-    DEFAULT_MAX_TOKENS,
     LLM_BASE_URL,
     LLM_API_KEY,
     LLM_MODEL,
@@ -17,7 +16,6 @@ from config import (
     MAX_RETRIES,
     RETRY_BACKOFF_SECONDS,
     REQUEST_TIMEOUT,
-    STAGE_MAX_TOKENS,
 )
 
 _client = OpenAI(base_url=LLM_BASE_URL, api_key=LLM_API_KEY, timeout=REQUEST_TIMEOUT)
@@ -29,7 +27,6 @@ def call_llm(prompt: str, stage_name: str = "") -> str:
     Retries on connection/timeout errors with backoff.
     """
     last_error = None
-    max_tokens = STAGE_MAX_TOKENS.get(stage_name, DEFAULT_MAX_TOKENS)
     model_candidates = [model for model in LLM_MODEL_CANDIDATES if model]
     if LLM_MODEL and LLM_MODEL not in model_candidates:
         model_candidates.insert(0, LLM_MODEL)
@@ -41,17 +38,10 @@ def call_llm(prompt: str, stage_name: str = "") -> str:
                     model=model,
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0.4,
-                    max_tokens=max_tokens,
                 )
                 content = response.choices[0].message.content
                 if not content or not content.strip():
                     raise ValueError("Empty response from model")
-                finish_reason = getattr(response.choices[0], "finish_reason", None)
-                if finish_reason == "length":
-                    print(
-                        f"  [{stage_name}] warning: response hit max_tokens={max_tokens} and may be truncated.",
-                        file=sys.stderr,
-                    )
                 return content.strip()
 
             except (APIConnectionError, APITimeoutError) as e:
