@@ -34,14 +34,14 @@ from config import (
 )
 from llm_client import call_llm
 from prompts.templates import (
-    STAGE_1_THEORY,
+    STAGE_1A_FUNDAMENTALS,
+    STAGE_1B_DEEP_DIVE,
+    STAGE_1C_SECURITY_PERFORMANCE,
     STAGE_2_ASCII_ARCHITECTURE,
     STAGE_2_5_PORTFOLIO_RELEVANCE,
     STAGE_2_7_PITFALLS,
     STAGE_2_8_CHEATSHEET,
     STAGE_3_INTERVIEW_QUESTIONS,
-    STAGE_4_MERGE_POLISH,
-    STAGE_5_REVISE_WITH_REFERENCES,
 )
 
 
@@ -148,80 +148,105 @@ def get_search_context(topic: str) -> str:
         )
         return "(search unavailable — ddgs not installed)"
 
-
+# generate_notes.py
 def generate_notes_for_topic(topic: str) -> str:
-    """Runs the full pipeline for one topic. Returns the final markdown."""
+    """Runs the modular multi-stage pipeline for a topic and returns full Markdown."""
     print(f"\n=== {topic} ===")
 
-    print("  [1/9] Fetching search context...")
+    print("  [1/8] Fetching search context...")
     search_context = get_search_context(topic)
 
-    print("  [2/9] Generating theory (beginner -> advanced)...")
-    stage1 = call_llm(
-        STAGE_1_THEORY.format(topic=topic, search_context=search_context),
-        stage_name="theory",
+    print("  [2/8] Generating fundamentals & mental model...")
+    part_fundamentals = call_llm(
+        STAGE_1A_FUNDAMENTALS.format(topic=topic, search_context=search_context),
+        stage_name="fundamentals",
     )
 
-    print("  [3/9] Generating ASCII architecture diagrams...")
-    stage2 = call_llm(
-        STAGE_2_ASCII_ARCHITECTURE.format(topic=topic, stage1_output=stage1),
+    print("  [3/8] Generating internals & advanced architecture...")
+    part_internals = call_llm(
+        STAGE_1B_DEEP_DIVE.format(topic=topic),
+        stage_name="internals",
+    )
+
+    print("  [4/8] Generating enterprise performance & security...")
+    part_sec_perf = call_llm(
+        STAGE_1C_SECURITY_PERFORMANCE.format(topic=topic),
+        stage_name="sec-perf",
+    )
+
+    print("  [5/8] Generating ASCII architecture diagrams...")
+    part_diagrams = call_llm(
+        STAGE_2_ASCII_ARCHITECTURE.format(topic=topic, stage1_output=part_fundamentals),
         stage_name="ascii-diagrams",
     )
 
-    print("  [4/9] Generating common pitfalls & debugging...")
-    stage2_7 = call_llm(
-        STAGE_2_7_PITFALLS.format(topic=topic, stage1_output=stage1),
+    print("  [6/8] Generating common pitfalls & debugging traps...")
+    part_pitfalls = call_llm(
+        STAGE_2_7_PITFALLS.format(topic=topic, stage1_output=part_internals),
         stage_name="pitfalls",
     )
 
-    print("  [5/9] Generating quick reference cheat sheet...")
-    stage2_8 = call_llm(
-        STAGE_2_8_CHEATSHEET.format(topic=topic, stage1_output=stage1),
+    print("  [7/8] Generating quick reference cheat sheet...")
+    part_cheatsheet = call_llm(
+        STAGE_2_8_CHEATSHEET.format(topic=topic, stage1_output=part_fundamentals),
         stage_name="cheatsheet",
     )
 
-    print("  [6/9] Matching against portfolio projects and experience...")
+    print("  [8/8] Matching portfolio & generating interview questions...")
     portfolio_context = format_portfolio_context_from_data(load_portfolio_data())
-    stage2_5 = call_llm(
+    part_portfolio = call_llm(
         STAGE_2_5_PORTFOLIO_RELEVANCE.format(
             topic=topic, portfolio_context=portfolio_context
         ),
         stage_name="portfolio-relevance",
     )
 
-    print("  [7/9] Generating interview questions...")
-    stage3 = call_llm(
-        STAGE_3_INTERVIEW_QUESTIONS.format(topic=topic, stage1_output=stage1),
+    part_interviews = call_llm(
+        STAGE_3_INTERVIEW_QUESTIONS.format(topic=topic, stage1_output=part_internals),
         stage_name="interview-questions",
     )
 
-    print("  [8/9] Merging final document...")
-    final_doc = call_llm(
-        STAGE_4_MERGE_POLISH.format(
-            topic=topic,
-            stage1_output=stage1,
-            stage2_output=stage2,
-            stage2_7_output=stage2_7,
-            stage2_8_output=stage2_8,
-            stage2_5_output=stage2_5,
-            stage3_output=stage3,
-        ),
-        stage_name="merge-polish",
-    )
+    # Stitch directly to avoid LLM merge/truncation bottlenecks
+    final_doc = f"""# {topic} — Comprehensive Engineering Reference
 
-    print("  [9/9] Quality pass using earlier notes...")
-    reference_notes = load_reference_notes(topic)
-    final_doc = call_llm(
-        STAGE_5_REVISE_WITH_REFERENCES.format(
-            topic=topic,
-            draft_output=final_doc,
-            reference_notes=reference_notes,
-        ),
-        stage_name="reference-revise",
-    )
+{part_portfolio}
 
+---
+
+## 1. Core Architecture & Fundamentals
+{part_fundamentals}
+
+---
+
+## 2. Deep Dive & Production Internals
+{part_internals}
+
+---
+
+## 3. Architecture Diagrams
+{part_diagrams}
+
+---
+
+## 4. Performance, Hardening & Security
+{part_sec_perf}
+
+---
+
+## 5. Common Pitfalls, Edge Cases & Debugging
+{part_pitfalls}
+
+---
+
+## 6. Quick Reference Cheat Sheet & API Matrix
+{part_cheatsheet}
+
+---
+
+## 7. Comprehensive Technical Interview Guide
+{part_interviews}
+"""
     return final_doc
-
 
 def save_markdown(topic: str, content: str) -> str:
     os.makedirs(OUTPUT_MD_DIR, exist_ok=True)

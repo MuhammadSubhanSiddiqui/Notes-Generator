@@ -78,7 +78,7 @@ LLM_MODEL_CANDIDATES = list(dict.fromkeys(LLM_MODEL_CANDIDATES))
 # Retry / rate-limit behavior for the loop-engineering calls
 MAX_RETRIES = 3
 RETRY_BACKOFF_SECONDS = 5
-REQUEST_TIMEOUT = 180  # seconds — theory/ASCII generations can run long
+REQUEST_TIMEOUT = 400  # seconds — theory/ASCII generations can run long
 
 # ---- Web search (DuckDuckGo, no API key — see search_client.py) ----
 # Adds a light "current context" pass before Stage 1, so notes aren't purely

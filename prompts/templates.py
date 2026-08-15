@@ -5,39 +5,45 @@ Chaining (instead of one giant prompt) keeps each call focused, so the model
 doesn't skimp on ASCII diagrams to save room for interview questions, etc.
 """
 
-STAGE_1_THEORY = """You are writing beginner-to-advanced study notes on: {topic}
+STAGE_1A_FUNDAMENTALS = """You are writing a comprehensive textbook chapter on the fundamentals of: {topic}
 
-Recent web search context (use ONLY to keep version numbers, current best
-practices, or recent changes accurate — do NOT quote or dump this raw into
-the notes, weave relevant bits in naturally, ignore anything irrelevant or
-if it says no results were available):
----
+Search Context:
 {search_context}
----
 
-Write CONCISE theory notes structured in 3 clear levels:
-
-## Beginner
-- Core definitions and "why this exists" — assume zero prior knowledge
-- 3-5 key concepts, each explained in 2-3 sentences max
-
-## Intermediate
-- How it's used in real projects
-- Common patterns, gotchas, and best practices
-- 3-5 key concepts
-
-## Advanced
-- Internals / how it works under the hood
-- Performance, scaling, and edge-case considerations
-- 3-5 key concepts
+Write an exhaustive, production-grade guide covering:
+1. Historical Background & Core Motivation (Why was this built? What problems does it solve?)
+2. Core Conceptual Model & Mental Model (In-depth breakdown of concepts with real-world analogies)
+3. Architecture & Primitives (Detailed explanation of primitives, syntax, and base mechanics)
+4. Hello World to Production Starter Code (Fully annotated, complete code blocks — not snippets)
 
 Rules:
-- Be CONCISE. No filler, no repeated explanations across levels.
-- Use bullet points and short paragraphs, not long prose blocks.
-- Use proper Markdown headers (##, ###).
-- Do NOT include ASCII diagrams or interview questions here — those come later.
-- Output ONLY the markdown notes, no preamble like "Here are the notes"."""
+- Write in full technical depth with complete explanations.
+- Aim for exhaustive detail (1,500+ words).
+- Output ONLY Markdown."""
 
+STAGE_1B_DEEP_DIVE = """You are writing an advanced internals and production guide for: {topic}
+
+Explain in exhaustive technical detail:
+1. Under-the-hood Internals (Memory management, execution cycles, engine/runtime mechanics)
+2. Advanced Patterns & Real-world Architecture (Enterprise patterns with complete code implementations)
+3. Concurrency, Scaling, and Bottlenecks (Throughput, caching, distributed patterns)
+4. Comprehensive Configuration & API Reference (Production settings, flags, options with explanations)
+
+Rules:
+- Do not summarize; provide comprehensive explanations and functional code implementations.
+- Aim for 2,000+ words. Output ONLY Markdown."""
+
+STAGE_1C_SECURITY_PERFORMANCE = """You are writing an enterprise performance and security guide for: {topic}
+
+Provide in-depth sections on:
+1. Performance Optimization & Benchmarking (Profiling, memory leaks, metrics)
+2. Hardening & Security Best Practices (Vulnerabilities, authentication, sanitization, secrets)
+3. Comprehensive Testing Strategies (Unit, Integration, E2E examples)
+4. Migration & Version Upgrade Traps
+
+Rules:
+- Include full code configurations and concrete tables.
+- Aim for 1,500+ words. Output ONLY Markdown."""
 
 STAGE_2_ASCII_ARCHITECTURE = """You are creating ASCII architecture diagrams for study notes on: {topic}
 
@@ -46,7 +52,7 @@ Based on this theory context (for reference only, don't repeat it):
 {stage1_output}
 ---
 
-Create 2-4 ASCII diagrams that visualize the most important architectural
+Create 4-5 ASCII diagrams that visualize the most important architectural
 or conceptual flows for {topic} (e.g. data flow, component lifecycle,
 request/response cycle, system architecture — whichever fit this topic).
 
@@ -99,13 +105,14 @@ Based on this theory context (for reference only, don't repeat it):
 {stage1_output}
 ---
 
-Create an interview questions section with 18-22 questions total, organized as:
+Create an interview questions section with 35-40 questions total, organized as:
 
 ## Interview Questions
 
-### Beginner (6-7 questions)
-### Intermediate (6-7 questions)
-### Advanced (6-7 questions)
+### Beginner (10-12 questions)
+### Intermediate (10-12 questions)
+### Advanced (10-12 questions)
+### Scenario (10-12 questions)
 
 For each question:
 - **Q:** the question
@@ -125,7 +132,7 @@ Based on this theory context (for reference only, don't repeat it):
 {stage1_output}
 ---
 
-Create 6-10 real mistakes, gotchas, failure modes, or debugging traps that
+Create 15-18 real mistakes, gotchas, failure modes, or debugging traps that
 people commonly hit with {topic}.
 
 For each item:
