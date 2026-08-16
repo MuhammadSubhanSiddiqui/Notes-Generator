@@ -11,6 +11,7 @@ Install:
 
 import sys
 import time
+from datetime import datetime, timezone
 
 from config import (
     SEARCH_MAX_RETRIES,
@@ -62,8 +63,9 @@ def build_search_context(topic: str) -> str:
     into a compact text block for injection into STAGE_1_THEORY as
     {search_context}.
     """
+    current_year = datetime.now(timezone.utc).year
     queries = [
-        f"{topic} best practices 2026",
+        f"{topic} best practices {current_year}",
         f"{topic} latest features updates",
     ]
 

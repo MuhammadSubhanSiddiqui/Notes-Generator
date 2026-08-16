@@ -7,6 +7,7 @@ Usage:
 """
 
 import os
+import re
 import sys
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
@@ -16,6 +17,48 @@ from reportlab.platypus import Paragraph, Preformatted, SimpleDocTemplate, Space
 from xml.sax.saxutils import escape
 
 from config import DEFAULT_THEME, OUTPUT_MD_DIR, OUTPUT_PDF_DIR, get_theme_for_topic
+
+# Inline markdown -> ReportLab paragraph markup.
+_INLINE_BOLD = re.compile(r"\*\*(.+?)\*\*")
+_INLINE_ITALIC = re.compile(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)")
+_INLINE_CODE = re.compile(r"`([^`]+?)`")
+_CODE_PLACEHOLDER = "\x00CODE{}\x00"
+
+
+def _apply_inline_markdown(escaped_text: str) -> str:
+    """
+    Converts **bold**, *italic*, and `code` spans in already-HTML-escaped
+    text into ReportLab's paragraph markup. Must run AFTER escape() so the
+    literal `<` and `&` in the source text don't get misread as markup,
+    but the *, _, and ` characters used for markdown emphasis survive
+    escaping untouched, so this still works on escaped input.
+
+    Code spans are extracted FIRST and replaced with placeholders before
+    bold/italic are applied, then restored at the end. Without this,
+    something like `*args` or `**kwargs` inside backticks — very common
+    in Python/JS notes — gets misread as emphasis markup: the greedy
+    **bold** pattern doesn't stop at a code span's boundary, so
+    `*args` ... `**kwargs` on the same line can match everything between
+    the two ** runs as one bold span, corrupting the <font> tags already
+    written for the code spans and breaking ReportLab's XML parser.
+    Matching code spans first and shielding their content from the
+    emphasis patterns avoids that entirely.
+    """
+    code_spans = []
+
+    def _stash_code(match: "re.Match") -> str:
+        code_spans.append(match.group(1))
+        return _CODE_PLACEHOLDER.format(len(code_spans) - 1)
+
+    text = _INLINE_CODE.sub(_stash_code, escaped_text)
+    text = _INLINE_BOLD.sub(r"<b>\1</b>", text)
+    text = _INLINE_ITALIC.sub(r"<i>\1</i>", text)
+
+    for index, code in enumerate(code_spans):
+        placeholder = _CODE_PLACEHOLDER.format(index)
+        text = text.replace(placeholder, f'<font face="Courier" size="9">{code}</font>')
+
+    return text
 
 
 def _build_styles(theme: dict):
@@ -101,15 +144,15 @@ def _story_from_markdown(md_text: str, theme: dict):
                 seen_title = True
                 continue
             else:
-                story.append(Paragraph(escape(stripped[2:]), styles["NotesH1"]))
+                story.append(Paragraph(_apply_inline_markdown(escape(stripped[2:])), styles["NotesH1"]))
         elif stripped.startswith("## "):
-            story.append(Paragraph(escape(stripped[3:]), styles["NotesH2"]))
+            story.append(Paragraph(_apply_inline_markdown(escape(stripped[3:])), styles["NotesH2"]))
         elif stripped.startswith("### "):
-            story.append(Paragraph(escape(stripped[4:]), styles["NotesH3"]))
+            story.append(Paragraph(_apply_inline_markdown(escape(stripped[4:])), styles["NotesH3"]))
         elif stripped.startswith("- ") or stripped.startswith("* "):
-            story.append(Paragraph(f"• {escape(stripped[2:])}", styles["NotesBullet"]))
+            story.append(Paragraph(f"• {_apply_inline_markdown(escape(stripped[2:]))}", styles["NotesBullet"]))
         else:
-            story.append(Paragraph(escape(stripped), styles["NotesBody"]))
+            story.append(Paragraph(_apply_inline_markdown(escape(stripped)), styles["NotesBody"]))
 
         if stripped.startswith("## "):
             story.append(HRFlowable(width="100%", thickness=0.6, color=colors.HexColor("#d8dee9"), spaceBefore=4, spaceAfter=8))

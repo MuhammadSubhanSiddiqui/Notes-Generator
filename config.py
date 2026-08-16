@@ -89,11 +89,10 @@ SEARCH_RESULTS_PER_QUERY = 4
 SEARCH_MAX_RETRIES = 2
 SEARCH_RETRY_BACKOFF_SECONDS = 3
 
-# ---- Portfolio relevance ----
-# muhammadsubhansiddiqui.netlify.app is a React SPA — its project list is
-# client-side rendered, so it can't be scraped with a plain fetch. Until the
-# Phase 2 Playwright/Selenium scraper exists, maintain this list by hand.
-# Each entry: {"name": ..., "description": ..., "stack": [...]}
+# ---- Portfolio relevance (fallback only) ----
+# portfolio_scraper.py (Playwright) is the primary source of truth and
+# writes to PORTFOLIO_DATA_PATH — this list is only used if that file is
+# missing or empty. Each entry: {"name": ..., "description": ..., "stack": [...]}
 PORTFOLIO_PROJECTS = [
     # {
     #     "name": "Example Project",
@@ -113,9 +112,15 @@ TOPICS = [
 ]
 
 # ---- Output paths ----
-PORTFOLIO_DATA_PATH = "portfolio_data.json"
-OUTPUT_MD_DIR = "output/md"
-OUTPUT_PDF_DIR = "output/pdf"
+# Anchored to this file's directory rather than left relative, so every
+# entry point (generate_notes.py, run_all.py, convert_to_pdf.py, or a
+# script imported from a different cwd) resolves to the same files instead
+# of silently writing/reading a fresh copy in whatever directory the
+# process happened to be launched from.
+_BASE_DIR = Path(__file__).resolve().parent
+PORTFOLIO_DATA_PATH = str(_BASE_DIR / "portfolio_data.json")
+OUTPUT_MD_DIR = str(_BASE_DIR / "output" / "md")
+OUTPUT_PDF_DIR = str(_BASE_DIR / "output" / "pdf")
 
 TOPIC_THEMES = {
     "javascript": {"accent": "#F7DF1E", "text_on_accent": "#1a1a1a", "label": "JavaScript"},
