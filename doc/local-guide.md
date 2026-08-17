@@ -58,11 +58,9 @@ python run_all.py
 portfolio_data.json -> output/md/<topic-slug>.md -> output/pdf/<topic-slug>.pdf
 ```
 
-`generate_notes.py` reads the `skills` list from `portfolio_data.json` and writes one markdown file per skill automatically.
+`run_all.py` scrapes the portfolio, then generates notes and converts to PDF for each skill sequentially. Topics whose relevant portfolio content hasn't changed since last generation are skipped (use `--force` to override).
 
-`run_all.py` converts each markdown file to PDF immediately after it is generated, before moving to the next skill.
-
-## One-topic run
+## One-topic run (no scrape / no PDF)
 
 ```powershell
 python generate_notes.py "React.js"
@@ -72,9 +70,43 @@ python generate_notes.py "React.js"
 python3 generate_notes.py "React.js"
 ```
 
+## One-topic with PDF
+
+```powershell
+python run_all.py --force "React.js"
+```
+
+```bash
+python3 run_all.py --force "React.js"
+```
+
+## Generate notes only (no scrape / no PDF)
+
+```powershell
+python generate_notes.py           # all scraped skills, skipped if up to date
+python generate_notes.py --force   # all scraped skills, force regenerate
+python generate_notes.py "Python"  # single ad-hoc topic
+```
+
+## Convert to PDF only
+
+```powershell
+python convert_to_pdf.py                    # all markdown files
+python convert_to_pdf.py python.md          # single file
+```
+
+## Scrape only
+
+```powershell
+python portfolio_scraper.py                 # headless (default)
+python portfolio_scraper.py --headed        # visible browser for debugging
+```
+
 ## Notes
 
 ```text
 If your server uses a different command or port, keep the same /v1 base URL in LLM_BASE_URL.
 If Chromium is already installed globally, `playwright install chromium` is still safe to run.
+The pipeline uses thread-pooled parallel LLM calls (5 workers) for ~3x speedup per topic.
+Staleness is tracked per-topic via portfolio content hashes in output/md/.note_state.json
 ```
