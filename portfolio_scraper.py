@@ -1,10 +1,11 @@
 """
 Portfolio scraper using Playwright to extract skills and projects from the
-React SPA portfolio at muhammadsubhansiddiqui.netlify.app.
+React SPA portfolio at muhammadsubhansiddiqui.me.
 
 Extracts:
 - Skills list (all technical tools and languages)
 - Projects (name, description, tech stack, links)
+- Experience & Certifications
 
 Results are written to portfolio_data.json for caching.
 """
@@ -22,9 +23,9 @@ from playwright.async_api import async_playwright
 
 
 class PortfolioScraper:
-    """Scrapes the portfolio site and extracts skills/projects."""
+    """Scrapes the portfolio site and extracts skills/projects/experience."""
 
-    BASE_URL = "https://muhammadsubhansiddiqui.netlify.app/"
+    BASE_URL = "https://muhammadsubhansiddiqui.me/"
     SKILLS_SECTION_INDEX = 2
     PROJECT_SECTION_INDEX = 3
     EXPERIENCE_SECTION_INDEX = 4
@@ -91,14 +92,16 @@ class PortfolioScraper:
             raise
 
     async def _extract_skills(self) -> List[str]:
-        """Extract all skills from the skills section."""
+        """Extract clean technical skills from the skills section."""
         try:
-            section = self._page.locator("section").nth(self.SKILLS_SECTION_INDEX)
+            # Try finding section by heading or fallback to index
+            section = self._page.locator("section").filter(has_text="Technical toolkit").first
+            if not await section.count():
+                section = self._page.locator("section").nth(self.SKILLS_SECTION_INDEX)
+                
             text = (await section.inner_text()).strip()
             lines = self._split_lines(text)
-            if len(lines) < 4:
-                print("  Warning: Skills section not found", file=sys.stderr)
-                return []
+            
             category_headers = {
                 "All",
                 "AI & ML",
@@ -111,12 +114,15 @@ class PortfolioScraper:
                 "Networking & Security",
                 "Realtime & Voice AI",
                 "Tools & DevOps",
+                "SKILLS",
+                "Technical toolkit",
+                "Systems I've shipped",
+                "Featured",
             }
+            
             skills = []
             for line in lines:
-                if line in {"SKILLS", "Technical toolkit"}:
-                    continue
-                if line.startswith("From ") or line in category_headers:
+                if line in category_headers or line.startswith("From ") or line.isdigit() or len(line) > 35:
                     continue
                 if line not in skills:
                     skills.append(line)
@@ -127,11 +133,21 @@ class PortfolioScraper:
             return []
 
     async def _extract_projects(self) -> List[Dict[str, Any]]:
-        """Extract all projects from the projects section."""
+        """Extract all projects from the projects section robustly."""
         try:
-            section = self._page.locator("section").nth(self.PROJECT_SECTION_INDEX)
+            # Target section containing project articles directly
+            section = self._page.locator("section").filter(has_text="Systems I've shipped").first
+            if not await section.count():
+                section = self._page.locator("section").nth(self.PROJECT_SECTION_INDEX)
+
             articles = section.locator("article")
             count = await articles.count()
+            
+            if not count:
+                # Fallback: find any articles on the entire page if section query is out of sync
+                articles = self._page.locator("article")
+                count = await articles.count()
+
             if not count:
                 print("  Warning: Projects section not found", file=sys.stderr)
                 return []
@@ -147,16 +163,105 @@ class PortfolioScraper:
         except Exception as e:
             print(f"  Warning: Failed to extract projects: {e}", file=sys.stderr)
             return []
-
+        
     async def _extract_experience(self) -> Dict[str, Any]:
+        """Extract experience items by clicking through tabs and cleaning duplicates."""
         try:
-            section = self._page.locator("section").nth(self.EXPERIENCE_SECTION_INDEX)
-            text = (await section.inner_text()).strip()
-            return self._parse_experience_section(text)
+            sections = self._page.locator("section")
+            count = await sections.count()
+            
+            experience_section = None
+            for i in range(count):
+                sec_text = await sections.nth(i).inner_text()
+                if "EXPERIENCE" in sec_text.upper() and "Where I've built momentum" in sec_text:
+                    experience_section = sections.nth(i)
+                    break
+            
+            if not experience_section:
+                experience_section = sections.nth(self.EXPERIENCE_SECTION_INDEX)
+
+            tab_buttons = experience_section.locator("button, [role='tab']")
+            tab_count = await tab_buttons.count()
+            
+            collected_chunks = []
+            
+            if tab_count > 0:
+                for t in range(tab_count):
+                    btn = tab_buttons.nth(t)
+                    await btn.click()
+                    await self._page.wait_for_timeout(400)
+                    
+                    # Extract the active content panel specifically if available, else section text
+                    panel = experience_section.locator(".tab-content, [role='tabpanel'], article, div").nth(0)
+                    chunk_text = await panel.inner_text() if await panel.count() > 0 else await experience_section.inner_text()
+                    collected_chunks.append(chunk_text.strip())
+            else:
+                collected_chunks.append(await experience_section.inner_text())
+
+            # Clean and deduplicate text chunks
+            unique_text = "\n\n".join(dict.fromkeys(collected_chunks))
+            
+            return {
+                "overview": unique_text,
+                "certifications": [],
+                "raw_text": unique_text
+            }
+            
         except Exception as e:
             print(f"  Warning: Failed to extract experience: {e}", file=sys.stderr)
-            return {"overview": "", "roles": [], "community_roles": [], "raw_text": ""}
+            return {"overview": "", "certifications": [], "raw_text": ""}     
+        
+    def _parse_experience_section(self, text: str) -> Dict[str, Any]:
+        lines = self._split_lines(text)
+        if not lines:
+            return {"work_experience": [], "education": {}, "certifications": [], "raw_text": text}
 
+        # Structure your education foundation
+        education = {
+            "degree": "BS Computer Science",
+            "institution": "Air University Islamabad",
+            "period": "2023 – 2027 · Expected",
+        }
+
+        work_experience = []
+        certifications = []
+
+        # Parse through lines to dynamically separate Work Experience/Fellowships and Certifications
+        # (Aapke portfolio par jo Data X ya fellowships hain, unhein yahan capture kiya jayega)
+        
+        # Let's cleanly separate sections based on known headers in your portfolio text
+        current_section = "education"
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            if "EXPERIENCE" in line.upper() or "FELLOWSHIP" in line.upper():
+                current_section = "work"
+                i += 1
+                continue
+            elif "CERTIFICATIONS" in line.upper():
+                current_section = "certifications"
+                i += 1
+                continue
+            elif "RELEVANT COURSEWORK" in line.upper():
+                current_section = "coursework"
+                i += 1
+                continue
+
+            if current_section == "work":
+                # Capture work experience / fellowship items
+                work_experience.append(line)
+            elif current_section == "certifications":
+                certifications.append(line)
+            
+            i += 1
+
+        return {
+            "work_experience": work_experience,
+            "education": education,
+            "certifications": certifications,
+            "raw_text": text,
+        }
+    
     def _split_lines(self, text: str) -> List[str]:
         return [line.strip() for line in text.splitlines() if line.strip()]
 
@@ -216,37 +321,23 @@ class PortfolioScraper:
         if not lines:
             return {"overview": "", "roles": [], "community_roles": [], "raw_text": ""}
 
-        overview = []
-        roles = []
-        community_roles = []
-
-        date_indices = [index for index, line in enumerate(lines) if self._is_date_line(line)]
-        community_index = next((index for index, line in enumerate(lines) if line == "COMMUNITY ROLES"), None)
-
-        if date_indices:
-            overview = lines[2:date_indices[0]] if len(lines) > 2 else []
-
-        for position, date_index in enumerate(date_indices):
-            next_boundary = date_indices[position + 1] if position + 1 < len(date_indices) else (
-                community_index if community_index is not None else len(lines)
-            )
-            roles.append(
-                {
-                    "period": lines[date_index],
-                    "location": lines[date_index + 1] if date_index + 1 < next_boundary else "",
-                    "title": lines[date_index + 2] if date_index + 2 < next_boundary else "",
-                    "company": lines[date_index + 3] if date_index + 3 < next_boundary else "",
-                    "highlights": lines[date_index + 4 : next_boundary],
-                }
-            )
-
-        if community_index is not None:
-            community_roles = lines[community_index + 1 :]
+        overview_lines = []
+        certifications = []
+        
+        # Parse through lines to cleanly separate education and certifications
+        capturing_certs = False
+        for line in lines:
+            if "CERTIFICATIONS" in line:
+                capturing_certs = True
+                continue
+            if not capturing_certs:
+                overview_lines.append(line)
+            else:
+                certifications.append(line)
 
         return {
-            "overview": "\n".join(overview),
-            "roles": roles,
-            "community_roles": community_roles,
+            "overview": "\n".join(overview_lines),
+            "certifications": certifications,
             "raw_text": text,
         }
 
@@ -256,17 +347,11 @@ async def scrape_portfolio(
     headless: bool = True,
     url: Optional[str] = None,
 ) -> int:
-    """
-    Main entry point for scraping.
-
-    Returns:
-        0 on success, 1 on error
-    """
+    """Main entry point for scraping."""
     try:
         async with PortfolioScraper(headless=headless, base_url=url) as scraper:
             data = await scraper.scrape()
 
-            # Write to JSON file
             Path(output_path).parent.mkdir(parents=True, exist_ok=True)
             with open(output_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
@@ -280,22 +365,10 @@ async def scrape_portfolio(
 
 
 def main() -> int:
-    parser = ArgumentParser(description="Scrape a portfolio site and cache the results as JSON")
-    parser.add_argument(
-        "--url",
-        default=PortfolioScraper.BASE_URL,
-        help="Portfolio URL to scrape (default: muhammadsubhansiddiqui.netlify.app)",
-    )
-    parser.add_argument(
-        "--output",
-        default="portfolio_data.json",
-        help="Output JSON file path (default: portfolio_data.json)",
-    )
-    parser.add_argument(
-        "--headed",
-        action="store_true",
-        help="Show browser window for debugging (default: headless)",
-    )
+    parser = ArgumentParser(description="Scrape portfolio site and cache as JSON")
+    parser.add_argument("--url", default=PortfolioScraper.BASE_URL)
+    parser.add_argument("--output", default="portfolio_data.json")
+    parser.add_argument("--headed", action="store_true")
 
     args = parser.parse_args()
 
